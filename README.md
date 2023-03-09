@@ -27,3 +27,21 @@ Here are some details about the script:
 7. It also updates a processed_records variable and prints a message indicating how many records have been processed so far.
 8. Finally, it saves the results in an Excel file using the df.to_excel method and prints a message indicating where the report has been saved.
 
+
+# Script for MySQL Database Backup
+This script uses the os library to create a MySQL database backup by executing the mysqldump command with appropriate options.
+
+##Variables
+`DB_HOST`: The host name or IP address of the MySQL server.
+`DB_USER`: The username for the MySQL account.
+`DB_PASSWORD`: The password for the MySQL account.
+`DB_NAME`: The name of the database to be backed up.
+`BACKUP_FOLDER`: The path to the backup folder where the backup files will be stored.
+##Process
+1. The script checks if the backup folder exists, and creates it if it does not.
+2. The mysqldump command is set with the appropriate options to execute a backup of the specified database.
+3. The script iterates over all tables in the database.
+4. For each table, the script checks if the country_id column exists in the table.
+5. If the column exists, the script filters the data by country_id column for the backup.
+6. A backup file is generated for the current table in the specified backup folder.
+7. Note that the script assumes that the mysqldump command is in the system path. If it is not, the full path to the mysqldump command must be specified.
