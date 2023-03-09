@@ -125,3 +125,44 @@ The script will output progress information to the console as it processes each 
 ## Note
 
 It is recommended to use this script only for small to medium sized datasets. Large datasets may cause performance issues due to the limitations of the Google Maps API free tier. Additionally, using the API for large datasets may result in additional charges from Google.
+
+
+
+# Airflow DAG for performing backups
+
+This is an example DAG (Directed Acyclic Graph) for performing backups using Airflow, a platform to programmatically author, schedule, and monitor workflows.
+
+## Prerequisites
+
+Make sure you have Airflow installed and configured properly. You also need the following Python modules:
+
+-   `datetime`
+-   `timedelta`
+
+## DAG details
+
+This DAG is called `backup_dag` and is set to run once a day using the `schedule_interval` parameter. The DAG consists of one task:
+
+-   `backup_script`: This task runs a Bash script to perform the backup. The script is located at `/var/backup_ILRI/DAG_adgg/backup.py`. The task is implemented using the `BashOperator` class from the `airflow.operators.bash_operator` module.
+
+The DAG is defined using the `DAG` class from the `airflow` module. The `default_args` dictionary contains some default arguments that will be used by all tasks in the DAG, unless they are overridden. The most important arguments are:
+
+-   `owner`: The owner of the DAG. This is a required argument.
+-   `depends_on_past`: Whether the task depends on the success of the previous run. This is set to `False`.
+-   `start_date`: The start date of the DAG. This is set to March 6th, 2023.
+-   `retries`: The number of times to retry the task in case of failure. This is set to `1`.
+-   `retry_delay`: The delay between retries. This is set to 5 minutes.
+
+The `dag` object is passed as a parameter to the `BashOperator` constructor to assign the task to the DAG.
+
+
+## Running the DAG
+
+To run the DAG, save the code to a file (e.g. `backup_dag.py`) and put it in your Airflow DAGs folder. Then start the Airflow scheduler and webserver:
+
+Copy code
+
+`airflow scheduler
+airflow webserver` 
+
+You should now be able to see the DAG in the Airflow UI and trigger it manually or wait for the scheduled run.
