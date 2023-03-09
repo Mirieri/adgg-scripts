@@ -1,7 +1,7 @@
 
 # Description
 
-Playground data processing scripts, data validation and data cleaning
+Playground for data processing scripts, data validation and data cleaning
 
 <details>
   <summary>Script for MySQL Database Backup</summary> 
