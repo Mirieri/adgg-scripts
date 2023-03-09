@@ -31,13 +31,16 @@ Here are some details about the script:
 # Script for MySQL Database Backup
 This script uses the os library to create a MySQL database backup by executing the `mysqldump` command with appropriate options.
 
-  #Variables
+  # Variables
+  
 `DB_HOST`: The host name or IP address of the MySQL server.
 `DB_USER`: The username for the MySQL account.
 `DB_PASSWORD`: The password for the MySQL account.
 `DB_NAME`: The name of the database to be backed up.
 `BACKUP_FOLDER`: The path to the backup folder where the backup files will be stored.
-  #Process
+
+  # Process
+  
 1. The script checks if the backup folder exists, and creates it if it does not.
 2. The mysqldump command is set with the appropriate options to execute a backup of the specified database.
 3. The script iterates over all tables in the database.
