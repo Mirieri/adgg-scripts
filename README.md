@@ -26,19 +26,66 @@ Note that the script assumes that the `mysqldump` command is in the system path.
 
 ## GPS Validation
 
-This script looks like it retrieves GPS coordinates from a MySQL database, uses the Google Maps API to reverse geocode the coordinates and extract the corresponding country, and saves the results in an Excel file. It also applies some logic to determine whether a test has passed based on the country value.
+This script creates a backup of a MySQL database and saves it to a specified folder. It uses the `os` module to interact with the operating system and execute command-line commands.
 
-## Process:
+## Prerequisites
 
--   It imports several modules including googlemaps, mysql.connector, pandas, os, and time.
--   It initializes a googlemaps.Client object with a Google Maps API key.
--   It connects to a MySQL database using the mysql.connector.connect function and retrieves GPS coordinates from a table in the database using the cursor.execute method.
--   It processes the retrieved coordinates in batches using a loop that calls the cursor.fetchmany method and then iterates over the returned rows.
--   For each row, it calls the gmaps.reverse_geocode method to reverse geocode the latitude and longitude coordinates and extract the country name from the result.
--   It then applies some logic to determine whether the test has passed based on the country value, and adds the result to a list of tuples called results.
--   It also updates a processed_records variable and prints a message indicating how many records have been processed so far.
--   Finally, it saves the results in an Excel file using the df.to_excel method and prints a message indicating where the report has been saved.
+-   MySQL installed on your machine
+-   Python 3.x installed on your machine
+-   `os` module is available in your Python environment
 
+## Usage
+
+1.  Open the Python script in your preferred editor.
+2.  Modify the following variables to match your database credentials and backup folder:
+
+pythonCopy code
+
+`DB_HOST = 'localhost'
+DB_USER = 'username'
+DB_PASSWORD = 'password'
+DB_NAME = 'database_name'
+BACKUP_FOLDER = '/path/to/backup/folder'` 
+
+3.  Save the changes.
+4.  Open a terminal window and navigate to the directory containing the script.
+5.  Run the script using the following command:
+
+bashCopy code
+
+`python backup_mysql.py` 
+
+6.  The script will create a backup of the database and save it to the specified backup folder.
+
+## How It Works
+
+The script uses the `os` module to execute command-line commands. The following steps are taken:
+
+1.  The script checks if the backup folder specified in the `BACKUP_FOLDER` variable exists. If it doesn't exist, the script creates the folder using the `os.makedirs()` function.
+    
+2.  The script creates a command string to execute the `mysqldump` utility with appropriate options. The command includes the following options:
+    
+    -   `-h`: Specifies the host name or IP address of the MySQL server
+    -   `-u`: Specifies the username to use when connecting to the MySQL server
+    -   `-p`: Specifies the password to use when connecting to the MySQL server
+    -   `--databases`: Specifies the database to back up
+    -   `--single-transaction`: Ensures a consistent backup by using a single transaction
+    -   `--quick`: Ensures a faster backup by retrieving rows one at a time
+    -   `-r -`: Redirects the output to stdout so that it can be piped to another command
+3.  The script uses the `os.popen()` function to execute the command and read the output. The output is split into a list of table names.
+    
+4.  The script iterates over the list of table names and checks if the table has a `country_id` column. If it does, the script modifies the `mysqldump` command to filter the data by the `country_id` column using the `--where` option.
+    
+5.  The script generates a backup filename for the current table and executes the modified `mysqldump` command to save the backup to the specified backup folder.
+    
+6.  The script repeats steps 4 and 5 for each table in the database.
+    
+
+## Notes
+
+-   This script is designed to be run on a Unix-like operating system, such as Linux or macOS. It may not work as expected on Windows.
+-   You should make sure to keep your backup files in a secure location, as they contain sensitive data.
+-   You can modify the script to back up multiple databases by changing the `DB_NAME` variable to a comma-separated list of database names.
 
 ## GPS Validation by Caching
 
