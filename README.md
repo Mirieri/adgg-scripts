@@ -1,7 +1,8 @@
 
 # Description
 
-## Script for MySQL Database Backup
+<details>
+  <summary>Script for MySQL Database Backup</summary> 
 
 This script uses the `os` library to create a MySQL database backup by executing the `mysqldump` command with appropriate options.
 
@@ -23,8 +24,10 @@ This script uses the `os` library to create a MySQL database backup by executing
 -   A backup file is generated for the current table in the specified backup folder.
 
 Note that the script assumes that the `mysqldump` command is in the system path. If it is not, the full path to the `mysqldump` command must be specified.
+</details>
 
-## GPS Validation
+<details>
+  <summary>GPS Validation</summary> 
 
 This script creates a backup of a MySQL database and saves it to a specified folder. It uses the `os` module to interact with the operating system and execute command-line commands.
 
@@ -86,9 +89,10 @@ The script uses the `os` module to execute command-line commands. The following 
 -   This script is designed to be run on a Unix-like operating system, such as Linux or macOS. It may not work as expected on Windows.
 -   You should make sure to keep your backup files in a secure location, as they contain sensitive data.
 -   You can modify the script to back up multiple databases by changing the `DB_NAME` variable to a comma-separated list of database names.
+</details>
 
-
-# GPS Geocoding Script
+<details>
+  <summary>GPS Geocoding Script</summary>
 
 This script is designed to geocode GPS coordinates stored in a MySQL database using the Google Maps API. The script uses the `mysql.connector` library to connect to the database and the `googlemaps` library to access the API. The geocoding is performed in parallel using the `multiprocessing` library, and the results are cached in a CSV file to speed up future lookups.
 
@@ -126,9 +130,11 @@ The script will output progress information to the console as it processes each 
 
 It is recommended to use this script only for small to medium sized datasets. Large datasets may cause performance issues due to the limitations of the Google Maps API free tier. Additionally, using the API for large datasets may result in additional charges from Google.
 
+</details>
 
 
-# Airflow DAG for performing backups
+<details>
+  <summary>Airflow DAG for performing backups</summary>
 
 This is an example DAG (Directed Acyclic Graph) for performing backups using Airflow, a platform to programmatically author, schedule, and monitor workflows.
 
@@ -166,3 +172,4 @@ Copy code
 airflow webserver` 
 
 You should now be able to see the DAG in the Airflow UI and trigger it manually or wait for the scheduled run.
+</details>
