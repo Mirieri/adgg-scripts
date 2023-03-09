@@ -4,14 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6c9b2b65-2d75-4c9a-af9f-2d621ab20f17" name="Changes" comment="initial commit">
-      <change afterPath="$PROJECT_DIR$/gpsValidationGeocoding.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="6c9b2b65-2d75-4c9a-af9f-2d621ab20f17" name="Changes" comment="Test for GPS validation geocoding">
+      <change afterPath="$PROJECT_DIR$/Test/mainTest.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backup_tz.py" beforeDir="false" afterPath="$PROJECT_DIR$/countryBackup.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gps_validation.py" beforeDir="false" afterPath="$PROJECT_DIR$/gpsValidation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gps_validation_alpha.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tanzania_DAG.py" beforeDir="false" afterPath="$PROJECT_DIR$/countryBackupDAG.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,7 +37,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager" selected="Python.gpsValidationGeocoding">
+  <component name="RunManager" selected="Python.mainTest">
     <configuration name="gpsValidationGeocoding" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="backup" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -108,8 +103,31 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="mainTest" type="PythonConfigurationType" factoryName="Python">
+      <module name="backup" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="/usr/bin/python3" />
+      <option name="SDK_NAME" value="Python 3.9" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Test" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Test/mainTest.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="Python.gpsValidationGeocoding" />
+      <item itemvalue="Python.mainTest" />
       <item itemvalue="Python.main" />
       <item itemvalue="Python.gps_validation" />
     </list>
@@ -151,11 +169,27 @@
       <option name="project" value="LOCAL" />
       <updated>1678377540702</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Revised changes to clean the code by remove repeated queries">
+      <created>1678388928415</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1678388928415</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Test for GPS validation geocoding">
+      <created>1678389107105</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1678389107105</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="initial commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="initial commit" />
+    <MESSAGE value="Revised changes to clean the code by remove repeated queries" />
+    <MESSAGE value="Test for GPS validation geocoding" />
+    <option name="LAST_COMMIT_MESSAGE" value="Test for GPS validation geocoding" />
   </component>
 </project>
