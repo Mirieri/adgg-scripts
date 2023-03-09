@@ -18,12 +18,12 @@ This script looks like it retrieves GPS coordinates from a MySQL database, uses 
 
 Here are some details about the script:
 
-It imports several modules including googlemaps, mysql.connector, pandas, os, and time.
-It initializes a googlemaps.Client object with a Google Maps API key.
-It connects to a MySQL database using the mysql.connector.connect function and retrieves GPS coordinates from a table in the database using the cursor.execute method.
-It processes the retrieved coordinates in batches using a loop that calls the cursor.fetchmany method and then iterates over the returned rows.
-For each row, it calls the gmaps.reverse_geocode method to reverse geocode the latitude and longitude coordinates and extract the country name from the result.
-It then applies some logic to determine whether the test has passed based on the country value, and adds the result to a list of tuples called results.
-It also updates a processed_records variable and prints a message indicating how many records have been processed so far.
-Finally, it saves the results in an Excel file using the df.to_excel method and prints a message indicating where the report has been saved.
+1. It imports several modules including googlemaps, mysql.connector, pandas, os, and time.
+2. It initializes a googlemaps.Client object with a Google Maps API key.
+3. It connects to a MySQL database using the mysql.connector.connect function and retrieves GPS coordinates from a table in the database using the cursor.execute method.
+4. It processes the retrieved coordinates in batches using a loop that calls the cursor.fetchmany method and then iterates over the returned rows.
+5. For each row, it calls the gmaps.reverse_geocode method to reverse geocode the latitude and longitude coordinates and extract the country name from the result.
+6. It then applies some logic to determine whether the test has passed based on the country value, and adds the result to a list of tuples called results.
+7. It also updates a processed_records variable and prints a message indicating how many records have been processed so far.
+8. Finally, it saves the results in an Excel file using the df.to_excel method and prints a message indicating where the report has been saved.
 
