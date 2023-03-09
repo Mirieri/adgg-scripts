@@ -87,19 +87,41 @@ The script uses the `os` module to execute command-line commands. The following 
 -   You should make sure to keep your backup files in a secure location, as they contain sensitive data.
 -   You can modify the script to back up multiple databases by changing the `DB_NAME` variable to a comma-separated list of database names.
 
-## GPS Validation by Caching
 
-This code is a Python script for geocoding GPS coordinates in a MySQL database using the Google Maps API, and caching the results to improve performance.
+# GPS Geocoding Script
 
-## Process
+This script is designed to geocode GPS coordinates stored in a MySQL database using the Google Maps API. The script uses the `mysql.connector` library to connect to the database and the `googlemaps` library to access the API. The geocoding is performed in parallel using the `multiprocessing` library, and the results are cached in a CSV file to speed up future lookups.
 
--   The script first establishes a connection to a MySQL database, selects the rows containing GPS coordinates, and loads cached results from a CSV file if available.
+## Requirements
 
--   It then defines two functions: check_cache, which checks if a given GPS location is already in the cache, and geocode, which uses the Google Maps API to geocode a GPS location and update the cache.
+This script requires the following libraries to be installed:
 
--   The script then sets the batch size and number of processes to use for parallel processing, and initializes the processing count. It also defines a callback function to update the processing count after each row is processed.
+-   `mysql.connector`
+-   `pandas`
+-   `googlemaps`
 
--   The script then uses a multiprocessing.Pool to parallelize the processing of the rows in batches. It first applies caching to the batch using check_cache, then applies geocoding to the batch in parallel using pool.map. It updates the cache with any new results, and prints out information about each row as it is processed using print.
+In addition, you will need a Google Maps API key to use the geocoding functionality. You can obtain an API key from the [Google Cloud Console](https://console.cloud.google.com/).
 
--   Finally, it saves the updated cache to a CSV file.
+## Usage
 
+To use this script, you will need to replace the following placeholders in the code:
+
+-   `YOUR_API_KEY`: Replace this with your own Google Maps API key
+-   `adgg`: Replace this with the name of the database containing the GPS coordinates
+-   `core_animal`: Replace this with the name of the table containing the GPS coordinates
+-   `root`: Replace this with the username for your MySQL database
+-   `batch_size`: Change this to control the number of rows processed in each batch
+-   `num_processes`: Change this to control the number of parallel processes used for geocoding
+-   `cache_file`: Replace this with the path to the CSV file used to cache geocoding results
+
+Once you have made these changes, you can run the script using the following command:
+
+pythonCopy code
+
+`python gps_geocoding.py` 
+
+The script will output progress information to the console as it processes each batch of rows. Once the script has finished, the cached results will be stored in the CSV file specified in `cache_file`.
+
+## Note
+
+It is recommended to use this script only for small to medium sized datasets. Large datasets may cause performance issues due to the limitations of the Google Maps API free tier. Additionally, using the API for large datasets may result in additional charges from Google.
