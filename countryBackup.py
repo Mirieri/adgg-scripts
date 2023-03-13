@@ -4,50 +4,70 @@ import datetime
 
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
+# load environment variables from .env file
 load_dotenv()
 
-# Get database credentials and backup folder from environment variables
-db_host = os.getenv("DB_HOST")
-db_user = os.getenv("DB_USER")
-db_pass = os.getenv("DB_PASSWORD")
-db_name = os.getenv("DB_NAME")
-backup_folder = os.path.abspath(os.getenv("BACKUP_FOLDER"))
-backup_name = os.getenv("BACKUP_NAME")
+# get database credentials and backup folder from environment variables
+DB_HOST = os.getenv("DB_HOST")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_NAME = os.getenv("DB_NAME")
+BACKUP_FOLDER = os.getenv("BACKUP_FOLDER")
+BACKUP_NAME = os.getenv("BACKUP_NAME")
 
-# Set command to execute mysqldump with appropriate options
-cmd = f"mysqldump -h {db_host} -u {db_user} -p{db_pass} --databases {db_name} --single-transaction --quick"
+# create backup folder if it doesn't exist
+if not os.path.exists(BACKUP_FOLDER):
+    os.makedirs(BACKUP_FOLDER)
 
-# Initialize timestamp variables
+# set command to execute mysqldump with appropriate options
+cmd = f"mysqldump -h {DB_HOST} -u {DB_USER} -p{DB_PASSWORD} --databases {DB_NAME} --single-transaction --quick"
+filename = f"{BACKUP_FOLDER}/{BACKUP_NAME}.sql"
+
+# initialize timestamp variables
 start_time = datetime.datetime.now()
 end_time = datetime.datetime.now()
 
-# Iterate over all tables in the database
+# generate backup file
+os.system(f"{cmd} > {filename}")
+
+# update end timestamp for timer and calculate duration
+duration = end_time - start_time
+
+# display countdown
+print(f"All databases backed up in {duration.seconds} seconds.")
+
+# iterate over all tables in the database
 for table in os.popen(f"{cmd} -r - --tables").read().split():
-    # Check if country_id column exists in table
+    
+    # check if country_id column exists in table
     if "country_id" in os.popen(f"{cmd} -r - -t {table} | head -n 1").read():
-        # Filter data by country_id column
+        # filter data by country_id column
         cmd = f"{cmd} --where=\"country_id = '10'\""
         
-    # Generate backup file for current table with specified name
-    filename = f"{backup_folder}/{backup_name}_{table}.sql"
+    # generate backup file for current table with specified name
+    table_filename = f"{BACKUP_FOLDER}/{BACKUP_NAME}_{table}.sql"
     
-    # Update start timestamp for timer
-    start_time = datetime.datetime.now()
+    # run command to generate backup file
+    os.system(f"{cmd} {table} > {table_filename}")
     
-    # Run command to generate backup file
-    os.system(f"{cmd} {table} > {filename}")
-    
-    # Update end timestamp for timer and calculate duration
+    # update end timestamp for timer and calculate duration
     end_time = datetime.datetime.now()
     duration = end_time - start_time
     
-    # Display countdown
-    print(f"Table '{table}' backup completed in {duration.seconds} seconds.")
-    time.sleep(1)
+    # print location of backup file on console
+    print(f"Backup file for '{table}' is stored in '{table_filename}'")
     
-# Calculate overall duration
+    # copy the result of the export to backup_name
+    os.system(f"cp {table_filename} {BACKUP_FOLDER}/{BACKUP_NAME}_{table}.sql")
+    
+    # include mv - BACKUP_NAME.sql after creating a backup file
+    os.system(f"mv {filename} {BACKUP_FOLDER}/{BACKUP_NAME}.sql")
+    
+    # display countdown
+    print(f"Backup for table '{table}' completed in {duration.seconds} seconds.")
+    
+# calculate overall duration
 overall_duration = end_time - start_time
 
-# Display overall duration
-print(f"All tables backed up in {overall_duration.seconds} seconds.")
+# display overall duration
+print(f"All backups are completed in {overall_duration.seconds} seconds.")
