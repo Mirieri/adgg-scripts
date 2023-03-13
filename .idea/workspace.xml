@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6c9b2b65-2d75-4c9a-af9f-2d621ab20f17" name="Changes" comment="Test for GPS validation geocoding">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="6c9b2b65-2d75-4c9a-af9f-2d621ab20f17" name="Changes" comment="changes for the destination folder">
       <change beforePath="$PROJECT_DIR$/countryBackup.py" beforeDir="false" afterPath="$PROJECT_DIR$/countryBackup.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gpsValidationGeocoding.py" beforeDir="false" afterPath="$PROJECT_DIR$/gpsValidationGeocoding.py" afterDir="false" />
     </list>
@@ -189,13 +188,21 @@
       <option name="project" value="LOCAL" />
       <updated>1678389107105</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="changes for the destination folder">
+      <created>1678703466408</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1678703466408</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="initial commit" />
     <MESSAGE value="Revised changes to clean the code by remove repeated queries" />
     <MESSAGE value="Test for GPS validation geocoding" />
-    <option name="LAST_COMMIT_MESSAGE" value="Test for GPS validation geocoding" />
+    <MESSAGE value="changes for the destination folder" />
+    <option name="LAST_COMMIT_MESSAGE" value="changes for the destination folder" />
   </component>
 </project>

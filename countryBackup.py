@@ -33,8 +33,8 @@ os.system(f"{cmd} > {filename}")
 # update end timestamp for timer and calculate duration
 duration = end_time - start_time
 
-# display countdown
-print(f"All databases backed up in {duration.seconds} seconds.")
+# # display countdown
+# print(f"All databases backed up in {duration.seconds} seconds.")
 
 # iterate over all tables in the database
 for table in os.popen(f"{cmd} -r - --tables").read().split():
@@ -57,12 +57,12 @@ for table in os.popen(f"{cmd} -r - --tables").read().split():
     # print location of backup file on console
     print(f"Backup file for '{table}' is stored in '{table_filename}'")
     
-    # copy the result of the export to backup_name
-    os.system(f"cp {table_filename} {BACKUP_FOLDER}/{BACKUP_NAME}_{table}.sql")
+    # # copy the result of the export to backup_name
+    # os.system(f"cp {table_filename} {BACKUP_FOLDER}/{BACKUP_NAME}_{table}.sql")
     
     # include mv - BACKUP_NAME.sql after creating a backup file
     os.system(f"mv {filename} {BACKUP_FOLDER}/{BACKUP_NAME}.sql")
-    
+
     # display countdown
     print(f"Backup for table '{table}' completed in {duration.seconds} seconds.")
     
