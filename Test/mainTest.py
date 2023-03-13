@@ -2,7 +2,7 @@ import unittest
 
 if __name__ == '__main__':
     # Define the names of the test files
-    test_files = [ 'databaseConnectionTest.py', 'geocodingMechanismTest.py', 'cacheTest.py', 'parallelProcessingTest.py']
+    test_files = ['databaseConnectionTest.py', 'geocodingMechanismTest.py', 'cacheTest.py', 'parallelProcessingTest.py']
 
     # Create the test suite
     test_suite = unittest.TestSuite()

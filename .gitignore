@@ -1,2 +1,2 @@
-#Tanzania DAG file
-countryBackupDAG.py
+# Ignore database credentials
+.env
