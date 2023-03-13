@@ -1,7 +1,4 @@
 import os
-import time
-import datetime
-
 from dotenv import load_dotenv
 
 # load environment variables from .env file
@@ -20,54 +17,26 @@ if not os.path.exists(BACKUP_FOLDER):
     os.makedirs(BACKUP_FOLDER)
 
 # set command to execute mysqldump with appropriate options
-cmd = f"mysqldump -h {DB_HOST} -u {DB_USER} -p{DB_PASSWORD} --databases {DB_NAME} --single-transaction --quick"
+cmd = f"mysqldump -h {DB_HOST} -u {DB_USER} -p{DB_PASSWORD} \
+       --databases {DB_NAME} --single-transaction --quick"
+
+# generate backup file for current table with specified name
 filename = f"{BACKUP_FOLDER}/{BACKUP_NAME}.sql"
 
-# initialize timestamp variables
-start_time = datetime.datetime.now()
-end_time = datetime.datetime.now()
+# Cache result of command before iterating over tables
+table_list = os.popen(f"{cmd} -r {filename} --tables").read().split()
 
-# generate backup file
-os.system(f"{cmd} > {filename}")
+for table in table_list:
 
-# update end timestamp for timer and calculate duration
-duration = end_time - start_time
-
-# # display countdown
-# print(f"All databases backed up in {duration.seconds} seconds.")
-
-# iterate over all tables in the database
-for table in os.popen(f"{cmd} -r - --tables").read().split():
-    
     # check if country_id column exists in table
-    if "country_id" in os.popen(f"{cmd} -r - -t {table} | head -n 1").read():
+    if "country_id" in os.popen(f"{cmd} -r {filename} -t {table} | head -n 1").read():
         # filter data by country_id column
         cmd = f"{cmd} --where=\"country_id = '10'\""
-        
-    # generate backup file for current table with specified name
-    table_filename = f"{BACKUP_FOLDER}/{BACKUP_NAME}_{table}.sql"
-    
-    # run command to generate backup file
-    os.system(f"{cmd} {table} > {table_filename}")
-    
-    # update end timestamp for timer and calculate duration
-    end_time = datetime.datetime.now()
-    duration = end_time - start_time
-    
-    # print location of backup file on console
-    print(f"Backup file for '{table}' is stored in '{table_filename}'")
-    
-    # # copy the result of the export to backup_name
-    # os.system(f"cp {table_filename} {BACKUP_FOLDER}/{BACKUP_NAME}_{table}.sql")
-    
-    # include mv - BACKUP_NAME.sql after creating a backup file
-    os.system(f"mv {filename} {BACKUP_FOLDER}/{BACKUP_NAME}.sql")
 
-    # display countdown
-    print(f"Backup for table '{table}' completed in {duration.seconds} seconds.")
-    
-# calculate overall duration
-overall_duration = end_time - start_time
+    # # run command to generate backup file
+    # os.system(f"{cmd} {table} > {filename}")
+    #
+    # # include mv - BACKUP_NAME.sql after creating a backup file
+    # os.system(f"mv {filename} {BACKUP_FOLDER}/{BACKUP_NAME}.sql")
 
-# display overall duration
-print(f"All backups are completed in {overall_duration.seconds} seconds.")
+print(f"All done check the backup in the following location {BACKUP_FOLDER}/{BACKUP_NAME}.sql")
