@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6c9b2b65-2d75-4c9a-af9f-2d621ab20f17" name="Changes" comment="changes for the destination folder">
-      <change afterPath="$PROJECT_DIR$/Test/testAnimalMovementManagement.py" afterDir="false" />
+    <list default="true" id="6c9b2b65-2d75-4c9a-af9f-2d621ab20f17" name="Changes" comment="Animal movement from one farm to another scripts">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gpsValidationGeocoding.py" beforeDir="false" afterPath="$PROJECT_DIR$/gpsValidationGeocoding.py" afterDir="false" />
     </list>
@@ -214,7 +213,14 @@
       <option name="project" value="LOCAL" />
       <updated>1678703881750</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Animal movement from one farm to another scripts">
+      <created>1678797216628</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1678797216628</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -245,6 +251,7 @@
     <MESSAGE value="Revised changes to clean the code by remove repeated queries" />
     <MESSAGE value="Test for GPS validation geocoding" />
     <MESSAGE value="changes for the destination folder" />
-    <option name="LAST_COMMIT_MESSAGE" value="changes for the destination folder" />
+    <MESSAGE value="Animal movement from one farm to another scripts" />
+    <option name="LAST_COMMIT_MESSAGE" value="Animal movement from one farm to another scripts" />
   </component>
 </project>
