@@ -6,6 +6,7 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
+from datetime import datetime
 
 # Load the .env file
 load_dotenv()
@@ -48,7 +49,7 @@ def send_email_with_report():
     try:
         cur.execute(query)
         # Export data as CSV
-        columns = ['Animal ID', 'Farm ID', 'New Farm ID', 'Region ID', 'District ID', 'Ward ID', 'Village ID']
+        columns = ['Animal ID', 'Current Farm ID', 'New Farm ID', 'Region ID', 'District ID', 'Ward ID', 'Village ID']
         data = cur.fetchall()
         csv_content = [columns]
         for row in data:
@@ -66,7 +67,9 @@ def send_email_with_report():
         msg['To'] = 'd.mogaka@cgiar.org'  # Replace with recipient email address
         msg['Subject'] = 'Update to show Movement to new Farms'
 
-        body = 'Please find attached CSV showing animal movement this week.\n\nBest Regards,\nDavid'
+        # Create report text
+        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        body = f"****** This is a system generated report ******\n\nReporting Date: {now}\n\nPlease find attached CSV showing animal movement this week.\n\nBest Regards,\nDavid"
 
         msg.attach(MIMEText(body, 'plain'))
 

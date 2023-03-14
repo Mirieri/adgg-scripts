@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6c9b2b65-2d75-4c9a-af9f-2d621ab20f17" name="Changes" comment="create an email report to show the animal movement">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Test/testAnimalMovementManagement.py" beforeDir="false" afterPath="$PROJECT_DIR$/Test/testAnimalMovementManagement.py" afterDir="false" />
+    <list default="true" id="6c9b2b65-2d75-4c9a-af9f-2d621ab20f17" name="Changes" comment="resolve errors update">
       <change beforePath="$PROJECT_DIR$/animalMovementManagement.py" beforeDir="false" afterPath="$PROJECT_DIR$/animalMovementManagement.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -263,7 +261,14 @@
       <option name="project" value="LOCAL" />
       <updated>1678815587523</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="resolve errors update">
+      <created>1678819068215</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1678819068215</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -298,6 +303,7 @@
     <MESSAGE value="reverting back the changes to show option for sql injection" />
     <MESSAGE value="creating a separate branch to implement a version of django" />
     <MESSAGE value="create an email report to show the animal movement" />
-    <option name="LAST_COMMIT_MESSAGE" value="create an email report to show the animal movement" />
+    <MESSAGE value="resolve errors update" />
+    <option name="LAST_COMMIT_MESSAGE" value="resolve errors update" />
   </component>
 </project>
