@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6c9b2b65-2d75-4c9a-af9f-2d621ab20f17" name="Changes" comment="creating a separate branch to implement a version of django">
+    <list default="true" id="6c9b2b65-2d75-4c9a-af9f-2d621ab20f17" name="Changes" comment="create an email report to show the animal movement">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Test/testAnimalMovementManagement.py" beforeDir="false" afterPath="$PROJECT_DIR$/Test/testAnimalMovementManagement.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/animalMovementManagement.py" beforeDir="false" afterPath="$PROJECT_DIR$/animalMovementManagement.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -142,12 +143,32 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="Python tests for testAnimalMovementManagement.TestAnimalDataUpdater.test_execute_update_query" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="backup" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Test" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;testAnimalMovementManagement.TestAnimalDataUpdater.test_execute_update_query&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="Python.anamal_movement" />
       <item itemvalue="Python.gpsValidationGeocoding" />
       <item itemvalue="Python.gps_validation" />
       <item itemvalue="Python.main" />
+      <item itemvalue="Python tests.Python tests for testAnimalMovementManagement.TestAnimalDataUpdater.test_execute_update_query" />
     </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python tests.Python tests for testAnimalMovementManagement.TestAnimalDataUpdater.test_execute_update_query" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -235,7 +256,14 @@
       <option name="project" value="LOCAL" />
       <updated>1678811563838</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="create an email report to show the animal movement">
+      <created>1678815587523</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1678815587523</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -269,6 +297,7 @@
     <MESSAGE value="Animal movement from one farm to another scripts" />
     <MESSAGE value="reverting back the changes to show option for sql injection" />
     <MESSAGE value="creating a separate branch to implement a version of django" />
-    <option name="LAST_COMMIT_MESSAGE" value="creating a separate branch to implement a version of django" />
+    <MESSAGE value="create an email report to show the animal movement" />
+    <option name="LAST_COMMIT_MESSAGE" value="create an email report to show the animal movement" />
   </component>
 </project>
