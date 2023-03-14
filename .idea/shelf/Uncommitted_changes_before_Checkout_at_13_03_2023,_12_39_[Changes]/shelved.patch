@@ -1,0 +1,190 @@
+Index: gpsValidationGeocoding.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import os\nfrom concurrent.futures import ProcessPoolExecutor\nfrom functools import partial\nimport mysql.connector\nimport pandas as pd\nimport googlemaps\n\n# Database connection details\nhost = os.getenv(\"DB_HOST\")\nuser = os.getenv(\"DB_USER\")\npassword = os.getenv(\"DB_PASSWORD\")\ndatabase = os.getenv(\"DB_NAME\")\n\n# Connect to database\ntry:\n    mydb = mysql.connector.connect(\n        host=host,\n        user=user,\n        password=password,\n        database=database\n    )\n    print(\"Database connected successfully!\")\nexcept Exception as e:\n    print(f\"Error connecting to the database: {str(e)}\")\n    exit()\n\n# Google Maps API key\napi_key = os.getenv(\"GOOGLE_MAPS_API_KEY\")\ngmaps = googlemaps.Client(key=api_key)\n\n# SQL query to fetch GPS coordinates from the table in the database\nquery = \"SELECT id, ROUND(latitude, 5), ROUND(longitude, 5) FROM core_animal WHERE latitude IS NOT NULL\"\n\n# Batch size and number of processes to use for parallel processing\nbatch_size = 1000\nnum_processes = 4\n\n# Load cached results, if any\ncache_file = 'gps_test_results_cache.csv'\n\nif os.path.exists(cache_file):\n    cache_df = pd.read_csv(cache_file)\nelse:\n    cache_df = pd.DataFrame(columns=['latitude', 'longitude', 'country'])\n\n# Dictionary to store previously queried GPS coordinates and their corresponding country\nresults_cache = {}\n\n\n# Define function to check cache for GPS location\ndef check_cache(row):\n    # Check if GPS location is in cache\n    latitude = row['latitude']\n    longitude = row['longitude']\n    cached_row = cache_df[cache_df[['latitude', 'longitude']].eq([latitude, longitude]).all(axis=1)]\n    if not cached_row.empty:\n        # Use cached result\n        country = cached_row.iloc[0]['country']\n        return row['id'], latitude, longitude, country == 'Kenya', country\n    else:\n        # GPS location not in cache\n        return row\n\n\n# Define function to geocode GPS location\ndef geocode(row):\n    id = row['id']\n    latitude = row['latitude']\n    longitude = row['longitude']\n    try:\n        # Check if location has already been queried before\n        location_key = f\"{latitude},{longitude}\"\n        if location_key in results_cache:\n            # Use previously queried values\n            country, test_passed = results_cache[location_key]\n        else:\n            # Query Google Maps API\n            result = gmaps.reverse_geocode((latitude, longitude))\n            country = None\n            for component in result[0]['address_components']:\n                if 'country' in component['types']:\n                    country = component['long_name']\n                    break\n            if country is not None:\n                results_cache[location_key] = (country, country == 'Kenya')\n            else:\n                results_cache[location_key] = (None, False)\n\n        return id, latitude, longitude, results_cache[location_key][1], results_cache[location_key][0]\n    except Exception as e:\n        # Geocoding failed\n        print(f\"Geocoding failed for ({latitude}, {longitude}): {str(e)}\")\n        return None\n\n\n# Define callback function to update processing count\ndef update_count(count, lock):\n    with lock:\n        count.value += 1\n        print(f\"{count.value}/{num_rows} rows processed\", end='\\r')\n\n\n# Get total number of rows to process\nwith mydb.cursor() as cursor:\n    cursor.execute(query)\n    num_rows = cursor.rowcount\n\n    # Initialize processing count\n    from multiprocessing import Value, Lock\n\n    count = Value('i', 0)\n    lock = Lock()\n\n    # Process rows in parallel\n    with ProcessPoolExecutor(max_workers=num_processes) as executor:\n        while True:\n            # Fetch rows in batch\n            rows = cursor.fetchmany(batch_size)\n            if not rows:\n                break\n\n            # Apply caching\n            rows = list(executor.map(check_cache, rows))\n\n            # Apply geocoding in parallel\n            geocode_partial = partial(geocode)\n            results = list(executor.map(geocode_partial, rows))\n\n            # Update cache\n            new_cache_rows = []\n            for result in results:\n                if result is not None:\n                    id_, latitude, longitude, test_passed, country = result\n                    if country is not None:\n                        new_cache_rows.append({'latitude': latitude, 'longitude': longitude, 'country': country})\n                    update_count(count, lock)\n            if new_cache_rows:\n                new_cache_df = pd.DataFrame(new_cache_rows)\n                cache_df = pd.concat([cache_df, new_cache_df], ignore_index=True)\n                cache_df.to_csv(cache_file, index=False)\n\n# Close database connection\nmydb.close()\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/gpsValidationGeocoding.py b/gpsValidationGeocoding.py
+--- a/gpsValidationGeocoding.py	(revision b2c9bf41f01c25e47631e0c2532ec0d885c40dae)
++++ b/gpsValidationGeocoding.py	(date 1678425888350)
+@@ -41,9 +41,9 @@
+ if os.path.exists(cache_file):
+     cache_df = pd.read_csv(cache_file)
+ else:
+-    cache_df = pd.DataFrame(columns=['latitude', 'longitude', 'country'])
++    cache_df = pd.DataFrame(columns=['latitude', 'longitude', 'country', 'region', 'district', 'ward', 'village'])
+ 
+-# Dictionary to store previously queried GPS coordinates and their corresponding country
++# Dictionary to store previously queried GPS coordinates and their corresponding country/region/district/ward/village
+ results_cache = {}
+ 
+ 
+@@ -56,7 +56,11 @@
+     if not cached_row.empty:
+         # Use cached result
+         country = cached_row.iloc[0]['country']
+-        return row['id'], latitude, longitude, country == 'Kenya', country
++        region = cached_row.iloc[0]['region']
++        district = cached_row.iloc[0]['district']
++        ward = cached_row.iloc[0]['ward']
++        village = cached_row.iloc[0]['village']
++        return row['id'], latitude, longitude, country == 'Kenya', country, region, district, ward, village
+     else:
+         # GPS location not in cache
+         return row
+@@ -72,72 +76,31 @@
+         location_key = f"{latitude},{longitude}"
+         if location_key in results_cache:
+             # Use previously queried values
+-            country, test_passed = results_cache[location_key]
++            country, region, district, ward, village, test_passed = results_cache[location_key]
+         else:
+             # Query Google Maps API
+             result = gmaps.reverse_geocode((latitude, longitude))
+-            country = None
++            country, region, district, ward, village = None, None, None, None, None
+             for component in result[0]['address_components']:
+                 if 'country' in component['types']:
+                     country = component['long_name']
+-                    break
++                if 'administrative_area_level_1' in component['types']:
++                    region = component['long_name']
++                if 'administrative_area_level_2' in component['types']:
++                    district = component['long_name']
++                if 'administrative_area_level_3' in component['types']:
++                    ward = component['long_name']
++                if 'locality' in component['types'] or 'sublocality' in component['types'] or 'neighborhood' in component['types']:
++                    village = component['long_name']
+             if country is not None:
+-                results_cache[location_key] = (country, country == 'Kenya')
++                results_cache[location_key] = (country, region, district, ward, village, country == 'Kenya')
+             else:
+-                results_cache[location_key] = (None, False)
++                results_cache[location_key] = (None, None, None, None, None, False)
+ 
+-        return id, latitude, longitude, results_cache[location_key][1], results_cache[location_key][0]
++        return id, latitude, longitude, results_cache[location_key][5], (
++            results_cache[location_key][0], results_cache[location_key][1], results_cache[location_key][2],
++            results_cache[location_key][3], results_cache[location_key][4])
+     except Exception as e:
+         # Geocoding failed
+         print(f"Geocoding failed for ({latitude}, {longitude}): {str(e)}")
+-        return None
+-
+-
+-# Define callback function to update processing count
+-def update_count(count, lock):
+-    with lock:
+-        count.value += 1
+-        print(f"{count.value}/{num_rows} rows processed", end='\r')
+-
+-
+-# Get total number of rows to process
+-with mydb.cursor() as cursor:
+-    cursor.execute(query)
+-    num_rows = cursor.rowcount
+-
+-    # Initialize processing count
+-    from multiprocessing import Value, Lock
+-
+-    count = Value('i', 0)
+-    lock = Lock()
+-
+-    # Process rows in parallel
+-    with ProcessPoolExecutor(max_workers=num_processes) as executor:
+-        while True:
+-            # Fetch rows in batch
+-            rows = cursor.fetchmany(batch_size)
+-            if not rows:
+-                break
+-
+-            # Apply caching
+-            rows = list(executor.map(check_cache, rows))
+-
+-            # Apply geocoding in parallel
+-            geocode_partial = partial(geocode)
+-            results = list(executor.map(geocode_partial, rows))
+-
+-            # Update cache
+-            new_cache_rows = []
+-            for result in results:
+-                if result is not None:
+-                    id_, latitude, longitude, test_passed, country = result
+-                    if country is not None:
+-                        new_cache_rows.append({'latitude': latitude, 'longitude': longitude, 'country': country})
+-                    update_count(count, lock)
+-            if new_cache_rows:
+-                new_cache_df = pd.DataFrame(new_cache_rows)
+-                cache_df = pd.concat([cache_df, new_cache_df], ignore_index=True)
+-                cache_df.to_csv(cache_file, index=False)
+-
+-# Close database connection
+-mydb.close()
++        return None;
+\ No newline at end of file
+Index: .env
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.env b/.env
+new file mode 100644
+--- /dev/null	(date 1678699778443)
++++ b/.env	(date 1678699778443)
+@@ -0,0 +1,6 @@
++DB_HOST=localhost
++DB_USER=root
++DB_PASSWORD=
++DB_NAME=adgg
++BACKUP_FOLDER="/Users/mirierimogaka/Desktop/backup/"
++BACKUP_NAME="adgg_tz"
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"AutoImportSettings\">\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\n  </component>\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"6c9b2b65-2d75-4c9a-af9f-2d621ab20f17\" name=\"Changes\" comment=\"Test for GPS validation geocoding\">\n      <change afterPath=\"$PROJECT_DIR$/.env\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/.gitignore\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.gitignore\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/Test/mainTest.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/Test/mainTest.py\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/countryBackup.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/countryBackup.py\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/gpsValidationGeocoding.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/gpsValidationGeocoding.py\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"FileTemplateManagerImpl\">\n    <option name=\"RECENT_TEMPLATES\">\n      <list>\n        <option value=\"Python Script\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"MarkdownSettingsMigration\">\n    <option name=\"stateVersion\" value=\"1\" />\n  </component>\n  <component name=\"ProjectId\" id=\"2Me5VxMWUHZaCEsq30rDMjzlApk\" />\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\">{\n  &quot;keyToString&quot;: {\n    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;\n  }\n}</component>\n  <component name=\"RunManager\" selected=\"Python.backup\">\n    <configuration name=\"backup\" type=\"PythonConfigurationType\" factoryName=\"Python\">\n      <module name=\"backup\" />\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\n      <option name=\"PARENT_ENVS\" value=\"true\" />\n      <envs>\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\n      </envs>\n      <option name=\"SDK_HOME\" value=\"/usr/bin/python3\" />\n      <option name=\"SDK_NAME\" value=\"Python 3.9\" />\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$\" />\n      <option name=\"IS_MODULE_SDK\" value=\"false\" />\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/countryBackup.py\" />\n      <option name=\"PARAMETERS\" value=\"\" />\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\n      <option name=\"MODULE_MODE\" value=\"false\" />\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\n      <option name=\"INPUT_FILE\" value=\"\" />\n      <method v=\"2\" />\n    </configuration>\n    <configuration name=\"gpsValidationGeocoding\" type=\"PythonConfigurationType\" factoryName=\"Python\" nameIsGenerated=\"true\">\n      <module name=\"backup\" />\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\n      <option name=\"PARENT_ENVS\" value=\"true\" />\n      <envs>\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\n      </envs>\n      <option name=\"SDK_HOME\" value=\"/usr/bin/python3\" />\n      <option name=\"SDK_NAME\" value=\"Python 3.9\" />\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$\" />\n      <option name=\"IS_MODULE_SDK\" value=\"false\" />\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/gpsValidationGeocoding.py\" />\n      <option name=\"PARAMETERS\" value=\"\" />\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\n      <option name=\"MODULE_MODE\" value=\"false\" />\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\n      <option name=\"INPUT_FILE\" value=\"\" />\n      <method v=\"2\" />\n    </configuration>\n    <configuration name=\"gps_validation\" type=\"PythonConfigurationType\" factoryName=\"Python\">\n      <module name=\"backup\" />\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\n      <option name=\"PARENT_ENVS\" value=\"true\" />\n      <envs>\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\n      </envs>\n      <option name=\"SDK_HOME\" value=\"/usr/bin/python3\" />\n      <option name=\"SDK_NAME\" value=\"Python 3.9\" />\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$\" />\n      <option name=\"IS_MODULE_SDK\" value=\"false\" />\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/gpsValidation.py\" />\n      <option name=\"PARAMETERS\" value=\"\" />\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\n      <option name=\"MODULE_MODE\" value=\"false\" />\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\n      <option name=\"INPUT_FILE\" value=\"\" />\n      <method v=\"2\" />\n    </configuration>\n    <configuration name=\"main\" type=\"PythonConfigurationType\" factoryName=\"Python\" nameIsGenerated=\"true\">\n      <module name=\"backup\" />\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\n      <option name=\"PARENT_ENVS\" value=\"true\" />\n      <envs>\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\n      </envs>\n      <option name=\"SDK_HOME\" value=\"\" />\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$\" />\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/main.py\" />\n      <option name=\"PARAMETERS\" value=\"\" />\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\n      <option name=\"MODULE_MODE\" value=\"false\" />\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\n      <option name=\"INPUT_FILE\" value=\"\" />\n      <method v=\"2\" />\n    </configuration>\n    <list>\n      <item itemvalue=\"Python.gpsValidationGeocoding\" />\n      <item itemvalue=\"Python.backup\" />\n      <item itemvalue=\"Python.main\" />\n      <item itemvalue=\"Python.gps_validation\" />\n    </list>\n  </component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"6c9b2b65-2d75-4c9a-af9f-2d621ab20f17\" name=\"Changes\" comment=\"\" />\n      <created>1678115234441</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1678115234441</updated>\n    </task>\n    <task id=\"LOCAL-00001\" summary=\"initial commit\">\n      <created>1678115623737</created>\n      <option name=\"number\" value=\"00001\" />\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1678115623737</updated>\n    </task>\n    <task id=\"LOCAL-00002\" summary=\"initial commit\">\n      <created>1678116072670</created>\n      <option name=\"number\" value=\"00002\" />\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1678116072670</updated>\n    </task>\n    <task id=\"LOCAL-00003\" summary=\"initial commit\">\n      <created>1678376635275</created>\n      <option name=\"number\" value=\"00003\" />\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1678376635275</updated>\n    </task>\n    <task id=\"LOCAL-00004\" summary=\"initial commit\">\n      <created>1678377540702</created>\n      <option name=\"number\" value=\"00004\" />\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1678377540702</updated>\n    </task>\n    <task id=\"LOCAL-00005\" summary=\"Revised changes to clean the code by remove repeated queries\">\n      <created>1678388928415</created>\n      <option name=\"number\" value=\"00005\" />\n      <option name=\"presentableId\" value=\"LOCAL-00005\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1678388928415</updated>\n    </task>\n    <task id=\"LOCAL-00006\" summary=\"Test for GPS validation geocoding\">\n      <created>1678389107105</created>\n      <option name=\"number\" value=\"00006\" />\n      <option name=\"presentableId\" value=\"LOCAL-00006\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1678389107105</updated>\n    </task>\n    <option name=\"localTasksCounter\" value=\"7\" />\n    <servers />\n  </component>\n  <component name=\"VcsManagerConfiguration\">\n    <MESSAGE value=\"initial commit\" />\n    <MESSAGE value=\"Revised changes to clean the code by remove repeated queries\" />\n    <MESSAGE value=\"Test for GPS validation geocoding\" />\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"Test for GPS validation geocoding\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision b2c9bf41f01c25e47631e0c2532ec0d885c40dae)
++++ b/.idea/workspace.xml	(date 1678700226480)
+@@ -4,12 +4,8 @@
+     <option name="autoReloadType" value="SELECTIVE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="6c9b2b65-2d75-4c9a-af9f-2d621ab20f17" name="Changes" comment="Test for GPS validation geocoding">
++    <list default="true" id="6c9b2b65-2d75-4c9a-af9f-2d621ab20f17" name="Changes" comment="separate credentials to .env file and other improvement">
+       <change afterPath="$PROJECT_DIR$/.env" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/Test/mainTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/Test/mainTest.py" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/countryBackup.py" beforeDir="false" afterPath="$PROJECT_DIR$/countryBackup.py" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/gpsValidationGeocoding.py" beforeDir="false" afterPath="$PROJECT_DIR$/gpsValidationGeocoding.py" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+@@ -187,13 +183,21 @@
+       <option name="project" value="LOCAL" />
+       <updated>1678389107105</updated>
+     </task>
+-    <option name="localTasksCounter" value="7" />
++    <task id="LOCAL-00007" summary="separate credentials to .env file and other improvement">
++      <created>1678700065612</created>
++      <option name="number" value="00007" />
++      <option name="presentableId" value="LOCAL-00007" />
++      <option name="project" value="LOCAL" />
++      <updated>1678700065613</updated>
++    </task>
++    <option name="localTasksCounter" value="8" />
+     <servers />
+   </component>
+   <component name="VcsManagerConfiguration">
+     <MESSAGE value="initial commit" />
+     <MESSAGE value="Revised changes to clean the code by remove repeated queries" />
+     <MESSAGE value="Test for GPS validation geocoding" />
+-    <option name="LAST_COMMIT_MESSAGE" value="Test for GPS validation geocoding" />
++    <MESSAGE value="separate credentials to .env file and other improvement" />
++    <option name="LAST_COMMIT_MESSAGE" value="separate credentials to .env file and other improvement" />
+   </component>
+ </project>
+\ No newline at end of file
