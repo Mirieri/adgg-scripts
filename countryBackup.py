@@ -33,10 +33,4 @@ for table in table_list:
         # filter data by country_id column
         cmd = f"{cmd} --where=\"country_id = '10'\""
 
-    # # run command to generate backup file
-    # os.system(f"{cmd} {table} > {filename}")
-    #
-    # # include mv - BACKUP_NAME.sql after creating a backup file
-    # os.system(f"mv {filename} {BACKUP_FOLDER}/{BACKUP_NAME}.sql")
-
 print(f"All done check the backup in the following location {BACKUP_FOLDER}/{BACKUP_NAME}.sql")
