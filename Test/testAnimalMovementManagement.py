@@ -1,78 +1,69 @@
 import unittest
-from dotenv import load_dotenv
+from unittest.mock import patch
+import io
 import os
 import mysql.connector
-from mysql.connector.errors import ProgrammingError
-
-load_dotenv()
+import pytest
+from dotenv import load_dotenv
+from animalMovementManagement import send_email_with_report, execute_update_query, connect_to_db
 
 
 class TestAnimalDataUpdater(unittest.TestCase):
 
-    def setUp(self):
-        # Load environment variables
-        self.HOST = os.getenv('DB_HOST')
-        self.DB_NAME = os.getenv('DB_NAME')
-        self.USER = os.getenv('DB_USER')
-        self.PASSWORD = os.getenv('DB_PASSWORD')
+    def test_send_email_with_report(self):
+        with patch('builtins.open', create=True) as mock_open, \
+                patch('smtplib.SMTP', autospec=True) as mock_smtp:
+            mock_open.return_value = io.StringIO(
+                "Animal ID,Farm ID,New Farm ID,Region ID,District ID,Ward ID,Village ID\n1,123,456,7,8,9,10")
+            send_email_with_report()
+            self.assertTrue(mock_smtp.called)
+            _, call_kwargs = mock_smtp.mock_calls[0]
+            msg = call_kwargs['msg']
+            attachments = [part.get_filename() for part in msg.walk() if part.get_filename()]
+            self.assertIn('updated_records.csv', attachments)
+            self.assertEqual(msg['From'], 'adgg@gmail.com')
+            self.assertEqual(msg['To'], 'd.mogaka@cgiar.org')
+            self.assertEqual(msg['Subject'], 'Updated Records')
 
-        try:
-            # Establish connection to MySQL server
-            self.connection = mysql.connector.connect(
-                host=self.HOST,
-                user=self.USER,
-                password=self.PASSWORD,
-                database=self.DB_NAME
-            )
-        except (mysql.connector.DatabaseError, mysql.connector.ProgrammingError) as error:
-            print(f"Database connection error: {error}")
+    def test_execute_update_query(self):
+        # Connect to the test database
+        conn = mysql.connector.connect(
+            host=os.getenv('DB_HOST'),
+            database=os.getenv('DB_NAME'),
+            user=os.getenv('DB_USER'),
+            password=os.getenv('DB_PASSWORD')
+        )
 
-        self.cursor = self.connection.cursor(buffered=True)
+        # Insert test data
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO core_farm (id, region_id, district_id, ward_id, village_id) VALUES ('001', '1001', '2001', '3001', '4001')")
+        cur.execute(
+            "INSERT INTO core_animal (id, farm_id, region_id, district_id, ward_id, village_id) VALUES ('001', '002', NULL, NULL, NULL, NULL)")
+        cur.execute(
+            "INSERT INTO core_animal_event (id, event_type, animal_id, additional_attributes) VALUES (1, 9, '001', '{\"557\":\"001\"}')")
 
-    def test_connection(self):
-        expected_output = None
+        # Call the function being tested
+        execute_update_query()
 
-        # Verify that we got a valid server version response
-        try:
-            self.assertIsNotNone(self.connection.get_server_info())
-        except (ProgrammingError) as error:
-            print(f"Can't get server info: {error}")
-            self.assertEqual(None, expected_output)
+        # Check that the update was successful
+        cur.execute("SELECT * FROM core_animal WHERE id = '001'")
+        result = cur.fetchone()
+        assert result[1] == '001'
+        assert result[2] == '1001'
+        assert result[3] == '2001'
+        assert result[4] == '3001'
+        assert result[5] == '4001'
 
-    def test_update_data(self):
-        update_query = """
-            UPDATE core_animal
-            INNER JOIN (
-              SELECT
-                REPLACE(IFNULL(JSON_EXTRACT(core_animal_event.additional_attributes, '$."755"'), ''), '"', '') as exit_animal_id,
-                REPLACE(IFNULL(JSON_EXTRACT(core_animal_event.additional_attributes, '$."756"'), ''), '"', '') as old_farm_id,
-                core_farm.id as new_farm_id
-              FROM
-                core_animal_event
-              INNER JOIN core_farm ON REPLACE(IFNULL(JSON_EXTRACT(core_animal_event.additional_attributes, '$."757"'), ''), '"', '') = core_farm.id
-              WHERE
-                event_type = 9 AND JSON_EXTRACT(core_animal_event.additional_attributes, '$."556"') != '' AND
-                REPLACE(IFNULL(JSON_EXTRACT(core_animal_event.additional_attributes, '$."556"'), ''), '"', '') <> 'null' AND
-                REPLACE(IFNULL(JSON_EXTRACT(core_animal_event.additional_attributes, '$."555"'), ''), '"', '') <> 'null' AND
-                REPLACE(IFNULL(JSON_EXTRACT(core_animal_event.additional_attributes, '$."554"'), ''), '"', '') <> 'null'
-            ) AS new_farms ON core_animal.id = new_farms.exit_animal_id
-            SET 
-                core_animal.farm_id = new_farms.new_farm_id
-            WHERE core_animal.farm_id = new_farms.old_farm_id;
-        """
+        # Clean up the test data
+        cur.execute("DELETE FROM core_animal_event WHERE id = 1")
+        cur.execute("DELETE FROM core_animal WHERE id = '001'")
+        cur.execute("DELETE FROM core_farm WHERE id = '001'")
 
-        self.cursor.execute(update_query)
-        self.connection.commit()
-
-        # Get the number of rows affected by the update statement
-        rows_affected = self.cursor.rowcount
-        self.assertGreater(rows_affected, 0)
-
-    def tearDown(self):
-        if self.connection.is_connected():
-            self.cursor.close()
-            self.connection.close()
-            print("Connection closed")
+        # Commit the changes and close the cursor and connection
+        conn.commit()
+        cur.close()
+        conn.close()
 
 
 if __name__ == '__main__':
