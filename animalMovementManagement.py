@@ -31,19 +31,27 @@ def send_email_with_report():
 
     # Execute the SQL query
     query = """
-        SELECT
-          core_animal_event.animal_id,
-          core_animal.farm_id as current_farm_id,
-          REPLACE(IFNULL(JSON_EXTRACT(core_animal_event.additional_attributes, '$."557"'), ''), '"', '') as new_farm_id,
-          core_farm.region_id,
-          core_farm.district_id,
-          core_farm.ward_id,
-          core_farm.village_id
+         SELECT
+                  core_animal_event.animal_id,
+                  core_animal.tag_id,
+                  previous_farmer.name as previous_farmer,
+                  previous_farmer.id as previous_farmer_id,
+                  current_farmer.name as new_farmer,
+                  current_farmer.id as current_farmer_id,
+                  region.name as region,
+                  district.name as district,
+                  ward.name as ward,
+                  village.name as village
         FROM
-          core_animal
+            core_animal
         INNER JOIN core_animal_event ON core_animal.id = core_animal_event.animal_id
-        INNER JOIN core_farm ON REPLACE(IFNULL(JSON_EXTRACT(core_animal_event.additional_attributes, '$."557"'), ''), '"', '') = core_farm.id
-        WHERE event_type = 9;
+        INNER JOIN core_farm  current_farmer ON REPLACE(IFNULL(JSON_EXTRACT(core_animal_event.additional_attributes, '$."557"'), ''), '"', '') = current_farmer.id
+        INNER JOIN core_farm as previous_farmer on core_animal.farm_id  = previous_farmer.id
+        INNER JOIN country_units region ON current_farmer.region_id = region.id
+        INNER JOIN country_units district ON current_farmer.district_id = district.id
+        INNER JOIN country_units ward ON current_farmer.ward_id = ward.id
+        INNER JOIN country_units village ON current_farmer.village_id = village.id
+        WHERE event_type = 9 order by core_animal.country_id asc;
     """
 
     try:
