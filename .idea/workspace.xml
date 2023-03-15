@@ -4,7 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6c9b2b65-2d75-4c9a-af9f-2d621ab20f17" name="Changes" comment="resolve errors update">
+    <list default="true" id="6c9b2b65-2d75-4c9a-af9f-2d621ab20f17" name="Changes" comment="beutify the body of the email">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/animalMovementManagement.py" beforeDir="false" afterPath="$PROJECT_DIR$/animalMovementManagement.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -268,7 +269,14 @@
       <option name="project" value="LOCAL" />
       <updated>1678819068215</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="beutify the body of the email">
+      <created>1678819822851</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1678819822851</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -304,6 +312,7 @@
     <MESSAGE value="creating a separate branch to implement a version of django" />
     <MESSAGE value="create an email report to show the animal movement" />
     <MESSAGE value="resolve errors update" />
-    <option name="LAST_COMMIT_MESSAGE" value="resolve errors update" />
+    <MESSAGE value="beutify the body of the email" />
+    <option name="LAST_COMMIT_MESSAGE" value="beutify the body of the email" />
   </component>
 </project>

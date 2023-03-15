@@ -64,8 +64,9 @@ def send_email_with_report():
         # Send email with CSV attachment
         msg = MIMEMultipart()
         msg['From'] = 'noreply.adgg@gmail.com'  # Replace with your own email address
-        msg['To'] = 'd.mogaka@cgiar.org'  # Replace with recipient email address
-        msg['Subject'] = 'Update to show Movement to new Farms'
+        recipients = ['d.mogaka@cgiar.org', 'a.hassen@cgiar.org', 'g.kipkosgei@cgiar.org', 'neemajkelya@gmail.com', 'j.ojango@cgiar.org','r.mrode@cgiar.org']
+        msg['To'] = ", ".join(recipients)
+        msg['Subject'] = 'Update to show Movement of Animals to new Farms'
 
         # Create report text
         now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
