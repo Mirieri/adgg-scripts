@@ -37,7 +37,7 @@ def send_email_with_report():
                   previous_farmer.name as previous_farmer,
                   previous_farmer.id as previous_farmer_id,
                   current_farmer.name as new_farmer,
-                  current_farmer.id as current_farmer_id,
+                  current_farmer.id as new_farmer_id,
                   region.name as region,
                   district.name as district,
                   ward.name as ward,
@@ -51,13 +51,13 @@ def send_email_with_report():
         INNER JOIN country_units district ON current_farmer.district_id = district.id
         INNER JOIN country_units ward ON current_farmer.ward_id = ward.id
         INNER JOIN country_units village ON current_farmer.village_id = village.id
-        WHERE event_type = 9 order by core_animal.country_id asc;
+        WHERE event_type = 9 AND core_animal_event.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY) order by core_animal.country_id asc;
     """
 
     try:
         cur.execute(query)
         # Export data as CSV
-        columns = ['Animal ID', 'Current Farm ID', 'New Farm ID', 'Region ID', 'District ID', 'Ward ID', 'Village ID']
+        columns = ['Animal ID','Tag Id','Previous Farmer','Previous Farmer Id','Few Farmer','New Farmer Id', 'Region ID', 'District ID', 'Ward ID', 'Village ID']
         data = cur.fetchall()
         csv_content = [columns]
         for row in data:
