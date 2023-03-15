@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="6c9b2b65-2d75-4c9a-af9f-2d621ab20f17" name="Changes" comment="emproving on the email report">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/animalMovementManagement.py" beforeDir="false" afterPath="$PROJECT_DIR$/animalMovementManagement.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/countryBackup.py" beforeDir="false" afterPath="$PROJECT_DIR$/countryBackup.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,7 +24,7 @@
     <option name="PUSH_AUTO_UPDATE" value="true" />
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="emailreport" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -44,8 +44,8 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager" selected="Python.anamal_movement">
-    <configuration name="anamal_movement" type="PythonConfigurationType" factoryName="Python">
+  <component name="RunManager" selected="Python.countryBackup">
+    <configuration name="countryBackup" type="PythonConfigurationType" factoryName="Python">
       <module name="backup" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -68,7 +68,7 @@
           <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
         </ENTRIES>
       </EXTENSION>
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/animalMovementManagement.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/countryBackup.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -157,7 +157,7 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.anamal_movement" />
+      <item itemvalue="Python.countryBackup" />
       <item itemvalue="Python.gpsValidationGeocoding" />
       <item itemvalue="Python.gps_validation" />
       <item itemvalue="Python.main" />
@@ -290,7 +290,21 @@
       <option name="project" value="LOCAL" />
       <updated>1678885182921</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="emproving on the email report">
+      <created>1678886923585</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1678886923585</updated>
+    </task>
+    <task id="LOCAL-00018" summary="emproving on the email report">
+      <created>1678887084239</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1678887084239</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
