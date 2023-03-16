@@ -2,8 +2,13 @@ import subprocess
 import os
 
 # Get the password from the environment variable
-# Run the following command to set the password on console export MYSQL_PASSWORD=<Your Password>
-password = os.environ.get('MYSQL_PASSWORD')
+# Run the following command to set the password on console export
+#   1. MYSQL_PASSWORD_SOURCE_DATABASE=<Your Password> AND
+#   2.MYSQL_PASSWORD_DESTINATION_DATABASE=<Your Password>
+password = os.environ.get('MYSQL_PASSWORD_SOURCE_DATABASE')
+
+# Destination database
+password2 = os.environ.get('MYSQL_PASSWORD_DESTINATION_DATABASE')
 
 # Run the first mysqldump command and capture its output
 dump1 = subprocess.Popen(
@@ -26,8 +31,8 @@ with open("combined_backup.sql", "wb") as f:
     f.write(backup_sql)
 
 # Create and import into adgg_uganda database
-subprocess.run(["mysql", "-u", "root", "-p", password, "-e", "CREATE DATABASE IF NOT EXISTS adgg_uganda"])
-subprocess.run(["mysql", "-u", "root", "-p", password, "adgg_uganda < combined_backup.sql"])
+subprocess.run(["mysql", "-u", "root", "-p", password2, "-e", "CREATE DATABASE IF NOT EXISTS adgg_uganda"])
+subprocess.run(["mysql", "-u", "root", "-p", password2, "adgg_uganda < combined_backup.sql"])
 
 # Delete the SQL backup file
 subprocess.run(["rm", "combined_backup.sql"])
