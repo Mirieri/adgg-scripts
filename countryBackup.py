@@ -1,40 +1,106 @@
 import os
-from dotenv import load_dotenv
+import concurrent.futures
+import threading
 
-load_dotenv()
+import mysql.connector
+import logging
+import gzip
 
-# prompt user for database credentials and backup folder
-DB_HOST = input("Enter database host: ")
-DB_USER = input("Enter database user: ")
-DB_PASSWORD = input("Enter database password: ")
-DB_NAME = input("Enter database name: ")
-BACKUP_FOLDER = input("Enter backup folder path: ")
-BACKUP_NAME = input("Enter backup file name: ")
+logging.basicConfig(level=logging.DEBUG)
 
-# create backup folder if it doesn't exist
-if not os.path.exists(BACKUP_FOLDER):
-    os.makedirs(BACKUP_FOLDER)
+DB_CONFIG = {
+    "host": "localhost",
+    "user": "root",
+    "password": "",
+    "database": "adgg"
+}
 
-# set command to execute mysqldump with appropriate options
-cmd = f"mysqldump -h {DB_HOST} -u {DB_USER} -p{DB_PASSWORD} \
-       --databases {DB_NAME} --single-transaction --quick"
+BACKUP_FOLDER = "/home/user/Desktop/backup_test"
+BATCH_SIZE = 5000
+COUNTRY_ID = 14
 
-# generate backup file for current table with specified name
-filename = f"{BACKUP_FOLDER}/{BACKUP_NAME}.sql"
+lock = threading.Lock()
 
-# get country_id from user input
-country_id = input("Enter country ID to filter by: ")
 
-# Cache result of command before iterating over tables
-table_list = os.popen(f"{cmd} -r {filename} --tables").read().split()
+def connect_to_db():
+    logging.debug("Connecting to database...")
+    return mysql.connector.connect(**DB_CONFIG)
 
-for table in table_list:
-    # check if country_id column exists in table
-    if "country_id" in os.popen(f"{cmd} -r {filename} -t {table} | head -n 1").read():
-        # filter data by country_id column
-        cmd = f"{cmd} --where=\"country_id = '{country_id}'\""
 
-# execute final command to generate backup file
-os.system(f"{cmd} > {filename}")
+def get_table_names(conn):
+    logging.debug("Getting table names...")
+    cursor = conn.cursor(buffered=True)
+    cursor.execute("SHOW TABLES")
+    return [row[0] for row in cursor.fetchall()]
 
-print(f"All done! Check the backup in the following location: {BACKUP_FOLDER}/{BACKUP_NAME}.sql")
+
+def backup_table(table_name):
+    logging.debug(f"Backing up table {table_name}...")
+
+    columns_query = f"SHOW COLUMNS FROM {table_name}"
+    insert_query = f"INSERT INTO {table_name} VALUES "
+
+    try:
+        conn = connect_to_db()
+        cursor = conn.cursor(buffered=True)
+        cursor.execute(columns_query)
+        columns = [column[0] for column in cursor.fetchall()]
+
+        if "country_id" not in columns:
+            select_query = f"SELECT * FROM {table_name}"
+            cursor.execute(select_query)
+            results = cursor.fetchall()
+
+            rows = [tuple(row) for row in results]
+
+        else:
+            select_query = f"SELECT * FROM {table_name} WHERE country_id=%s"
+            cursor.execute(select_query, (COUNTRY_ID,))
+            results = cursor.fetchall()
+
+            rows = [tuple(row) for row in results]
+
+        if not rows:
+            logging.warning(f"No data found for table {table_name}")
+
+        else:
+            table_file = os.path.join(BACKUP_FOLDER, f"{table_name}.sql.gz")
+            with gzip.open(table_file, "at") as f:
+                start = 0
+                end = min(BATCH_SIZE, len(rows))
+                while start < len(rows):
+                    batch = rows[start:end]
+                    batch_insert = f"{insert_query} {','.join(map(str, batch))};\n"
+                    with lock:
+                        f.write(batch_insert)
+                    start += BATCH_SIZE
+                    end = min(end + BATCH_SIZE, len(rows))
+
+    except mysql.connector.errors.PoolError as e:
+        logging.exception(f"Error backing up table {table_name}: {str(e)}")
+        raise e
+    finally:
+        conn.close()
+
+
+def backup_database():
+    logging.debug("Backing up database...")
+    conn = connect_to_db()
+
+    try:
+        table_names = get_table_names(conn)
+
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            futures = [executor.submit(backup_table, table_name) for table_name in table_names]
+
+        logging.info("Backup process completed successfully.")
+
+    except mysql.connector.errors.PoolError as e:
+        logging.exception(f"Error backing up database: {str(e)}")
+        raise e
+    finally:
+        conn.close()
+
+
+if __name__ == "__main__":
+    backup_database()
