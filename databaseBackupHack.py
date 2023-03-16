@@ -8,7 +8,7 @@ password = os.environ.get('MYSQL_PASSWORD')
 # Run the first mysqldump command and capture its output
 dump1 = subprocess.Popen(
     ["mysqldump", "-u", "root", "-p", password, "--databases", "adgg", "--tables", "core_animal", "core_farm",
-     "core_animal_herd", "core_animal_event", "core_excel_import", "--where=country_id=14"], stdout=subprocess.PIPE)
+     "core_animal_herd", "core_animal_event", "core_excel_import", "--where=country_id=15"], stdout=subprocess.PIPE)
 output1, _ = dump1.communicate()
 
 # Run the second mysqldump command and capture its output

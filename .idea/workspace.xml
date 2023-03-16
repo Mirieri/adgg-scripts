@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6c9b2b65-2d75-4c9a-af9f-2d621ab20f17" name="Changes" comment="emproving on the email report">
-      <change afterPath="$PROJECT_DIR$/.idea/backup.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/databaseBackupHack.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/animalMovementManagement.py" beforeDir="false" afterPath="$PROJECT_DIR$/animalMovementManagement.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/countryBackup.py" beforeDir="false" afterPath="$PROJECT_DIR$/countryBackup.py" afterDir="false" />
-    </list>
+    <list default="true" id="6c9b2b65-2d75-4c9a-af9f-2d621ab20f17" name="Changes" comment="adding a simplified temproray script for backing up" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -27,7 +21,7 @@
     <option name="PUSH_AUTO_UPDATE" value="true" />
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="consolepromptdatabasebackup" />
+        <entry key="$PROJECT_DIR$" value="databaseBackupHack" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -317,7 +311,14 @@
       <option name="project" value="LOCAL" />
       <updated>1678890034877</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="adding a simplified temproray script for backing up">
+      <created>1678959567088</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1678959567088</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -356,6 +357,7 @@
     <MESSAGE value="beutify the body of the email" />
     <MESSAGE value="add receipent to receive emails" />
     <MESSAGE value="emproving on the email report" />
-    <option name="LAST_COMMIT_MESSAGE" value="emproving on the email report" />
+    <MESSAGE value="adding a simplified temproray script for backing up" />
+    <option name="LAST_COMMIT_MESSAGE" value="adding a simplified temproray script for backing up" />
   </component>
 </project>
