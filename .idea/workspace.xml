@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6c9b2b65-2d75-4c9a-af9f-2d621ab20f17" name="Changes" comment="emproving on the email report">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/countryBackup.py" beforeDir="false" afterPath="$PROJECT_DIR$/countryBackup.py" afterDir="false" />
-    </list>
+    <list default="true" id="6c9b2b65-2d75-4c9a-af9f-2d621ab20f17" name="Changes" comment="adding a simplified temproray script for backing up" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -24,7 +21,7 @@
     <option name="PUSH_AUTO_UPDATE" value="true" />
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="emailreport" />
+        <entry key="$PROJECT_DIR$" value="databaseBackupHack" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -38,14 +35,16 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "settings.editor.selected.configurable": "settings.codegpt"
   }
-}</component>
-  <component name="RunManager" selected="Python.countryBackup">
-    <configuration name="countryBackup" type="PythonConfigurationType" factoryName="Python">
+}]]></component>
+  <component name="RunManager" selected="Python.databaseBackupHack">
+    <configuration name="databaseBackupHack" type="PythonConfigurationType" factoryName="Python">
       <module name="backup" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -68,7 +67,7 @@
           <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
         </ENTRIES>
       </EXTENSION>
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/countryBackup.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/databaseBackupHack.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -157,7 +156,7 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.countryBackup" />
+      <item itemvalue="Python.databaseBackupHack" />
       <item itemvalue="Python.gpsValidationGeocoding" />
       <item itemvalue="Python.gps_validation" />
       <item itemvalue="Python.main" />
@@ -165,6 +164,7 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python tests.Python tests for testAnimalMovementManagement.TestAnimalDataUpdater.test_execute_update_query" />
         <item itemvalue="Python tests.Python tests for testAnimalMovementManagement.TestAnimalDataUpdater.test_execute_update_query" />
       </list>
     </recent_temporary>
@@ -304,7 +304,21 @@
       <option name="project" value="LOCAL" />
       <updated>1678887084239</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="emproving on the email report">
+      <created>1678890034877</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1678890034877</updated>
+    </task>
+    <task id="LOCAL-00020" summary="adding a simplified temproray script for backing up">
+      <created>1678959567088</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1678959567088</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -343,6 +357,7 @@
     <MESSAGE value="beutify the body of the email" />
     <MESSAGE value="add receipent to receive emails" />
     <MESSAGE value="emproving on the email report" />
-    <option name="LAST_COMMIT_MESSAGE" value="emproving on the email report" />
+    <MESSAGE value="adding a simplified temproray script for backing up" />
+    <option name="LAST_COMMIT_MESSAGE" value="adding a simplified temproray script for backing up" />
   </component>
 </project>

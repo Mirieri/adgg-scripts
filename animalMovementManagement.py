@@ -57,7 +57,8 @@ def send_email_with_report():
     try:
         cur.execute(query)
         # Export data as CSV
-        columns = ['Animal ID','Tag Id','Previous Farmer','Previous Farmer Id','Few Farmer','New Farmer Id', 'Region ID', 'District ID', 'Ward ID', 'Village ID']
+        columns = ['Animal ID', 'Tag Id', 'Previous Farmer', 'Previous Farmer Id', 'New Farmer', 'New Farmer Id',
+                   'Region ID', 'District ID', 'Ward ID', 'Village ID']
         data = cur.fetchall()
         csv_content = [columns]
         for row in data:
@@ -72,7 +73,8 @@ def send_email_with_report():
         # Send email with CSV attachment
         msg = MIMEMultipart()
         msg['From'] = 'noreply.adgg@gmail.com'  # Replace with your own email address
-        recipients = ['d.mogaka@cgiar.org', 'a.hassen@cgiar.org', 'y.jabes@cgiar.org', 'g.kipkosgei@cgiar.org', 'neemajkelya@gmail.com', 'j.ojango@cgiar.org','r.mrode@cgiar.org']
+        recipients = ['d.mogaka@cgiar.org', 'a.hassen@cgiar.org', 'y.jabes@cgiar.org', 'g.kipkosgei@cgiar.org',
+                      'neemajkelya@gmail.com', 'j.ojango@cgiar.org', 'r.mrode@cgiar.org']
         msg['To'] = ", ".join(recipients)
         msg['Subject'] = 'Update to show Movement of Animals to new Farms'
 
