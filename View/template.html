@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Family Tree</title>
+  <style>
+    #tree-container {
+      height: 100%;
+      width: 100%;
+      position: fixed;
+      background-color: white;
+    }
+
+  </style>
+</head>
+
+  <body>
+    <div id="tree-container"></div>
+
+    <!-- Load D3.js library -->
+    <script src="https://d3js.org/d3.v6.min.js" charset="utf-8"></script>
+
+    <!-- Load the JS code for generating the tree -->
+    <script type="text/javascript" charset="utf-8">
+      const data = JSON.parse('{{ tree_data|safe }}');
+      console.log(data);
+
+      // Create the root layout for the tree
+      var layout = d3.tree().size([500, 500]);
+
+      // Generate the hierarchical structure of the tree and plot it
+      var root = d3.hierarchy(data);
+      layout(root);
+
+      // Append an SVG element to the container
+      var svg = d3.select("#tree-container").append("svg")
+        .attr("width", "100%")
+        .attr("height", "100%")
+        .append("g")
+        .attr("transform", "translate(50, 50)");
+
+      // Add links between the nodes
+      svg.selectAll(".link")
+        .data(root.links())
+        .enter().append("line")
+        .attr("class", "link")
+        .attr("x1", function(d) {return d.source.x;})
+        .attr("y1", function(d) {return d.source.y;})
+        .attr("x2", function(d) {return d.target.x;})
+        .attr("y2", function(d) {return d.target.y;});
+
+      // Add circles at each node
+      var circle = svg.selectAll(".node")
+        .data(root.descendants())
+        .enter().append("g")
+        .attr("class", "node")
+        .attr("transform", function(d) {return "translate(" + d.x + "," + d.y + ")";});
+
+      circle.append("circle")
+        .attr("r", 10)
+        .style("fill", "#ddd");
+
+      // Add labels at each node
+      circle.append("text")
+        .attr("dy", ".35em")
+        .attr("x", function(d) {return d.children ? -20 : 20;})
+        .style("text-anchor", function(d) {return d.children ? "end" : "start";})
+        .text(function(d) {return d.data.name;});
+    </script>
+  </body>
+
+</html>
